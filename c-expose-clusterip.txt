@@ -1,0 +1,105 @@
+Chain PREROUTING (policy ACCEPT)
+target     prot opt source               destination
+KUBE-SERVICES  all  --  0.0.0.0/0            0.0.0.0/0            /* kubernetes service portals */
+
+Chain INPUT (policy ACCEPT)
+target     prot opt source               destination
+
+Chain OUTPUT (policy ACCEPT)
+target     prot opt source               destination
+KUBE-SERVICES  all  --  0.0.0.0/0            0.0.0.0/0            /* kubernetes service portals */
+
+Chain POSTROUTING (policy ACCEPT)
+target     prot opt source               destination
+KUBE-POSTROUTING  all  --  0.0.0.0/0            0.0.0.0/0            /* kubernetes postrouting rules */
+AWS-SNAT-CHAIN-0  all  --  0.0.0.0/0            0.0.0.0/0            /* AWS SNAT CHAIN */
+
+Chain AWS-SNAT-CHAIN-0 (1 references)
+target     prot opt source               destination
+AWS-SNAT-CHAIN-1  all  --  0.0.0.0/0           !192.168.0.0/16       /* AWS SNAT CHAIN */
+
+Chain AWS-SNAT-CHAIN-1 (1 references)
+target     prot opt source               destination
+SNAT       all  --  0.0.0.0/0            0.0.0.0/0            /* AWS, SNAT */ ADDRTYPE match dst-type !LOCAL to:192.168.25.38 random
+
+Chain DOCKER (0 references)
+target     prot opt source               destination
+
+Chain KUBE-MARK-DROP (0 references)
+target     prot opt source               destination
+MARK       all  --  0.0.0.0/0            0.0.0.0/0            MARK or 0x8000
+
+Chain KUBE-MARK-MASQ (7 references)
+target     prot opt source               destination
+MARK       all  --  0.0.0.0/0            0.0.0.0/0            MARK or 0x4000
+
+Chain KUBE-NODEPORTS (1 references)
+target     prot opt source               destination
+
+Chain KUBE-POSTROUTING (1 references)
+target     prot opt source               destination
+RETURN     all  --  0.0.0.0/0            0.0.0.0/0            mark match ! 0x4000/0x4000
+MARK       all  --  0.0.0.0/0            0.0.0.0/0            MARK xor 0x4000
+MASQUERADE  all  --  0.0.0.0/0            0.0.0.0/0            /* kubernetes service traffic requiring SNAT */ random-fully
+
+Chain KUBE-SEP-5UMBSASBBN2WKKG6 (1 references)
+target     prot opt source               destination
+KUBE-MARK-MASQ  all  --  192.168.122.214      0.0.0.0/0
+DNAT       tcp  --  0.0.0.0/0            0.0.0.0/0            tcp to:192.168.122.214:443
+
+Chain KUBE-SEP-CGOC76OYFGADJSOI (1 references)
+target     prot opt source               destination
+KUBE-MARK-MASQ  all  --  192.168.22.34        0.0.0.0/0
+DNAT       tcp  --  0.0.0.0/0            0.0.0.0/0            tcp to:192.168.22.34:80
+
+Chain KUBE-SEP-EPTVK44AHTECML3U (1 references)
+target     prot opt source               destination
+KUBE-MARK-MASQ  all  --  192.168.26.30        0.0.0.0/0
+DNAT       tcp  --  0.0.0.0/0            0.0.0.0/0            tcp to:192.168.26.30:53
+
+Chain KUBE-SEP-LWCTYNFUJ5OTWQC6 (1 references)
+target     prot opt source               destination
+KUBE-MARK-MASQ  all  --  192.168.33.247       0.0.0.0/0
+DNAT       udp  --  0.0.0.0/0            0.0.0.0/0            udp to:192.168.33.247:53
+
+Chain KUBE-SEP-LXFJBNT2O4YXRJNO (1 references)
+target     prot opt source               destination
+KUBE-MARK-MASQ  all  --  192.168.26.30        0.0.0.0/0
+DNAT       udp  --  0.0.0.0/0            0.0.0.0/0            udp to:192.168.26.30:53
+
+Chain KUBE-SEP-UIHHNEY5Z2543QQB (1 references)
+target     prot opt source               destination
+KUBE-MARK-MASQ  all  --  192.168.33.247       0.0.0.0/0
+DNAT       tcp  --  0.0.0.0/0            0.0.0.0/0            tcp to:192.168.33.247:53
+
+Chain KUBE-SEP-VV35REXB7Z5L5654 (1 references)
+target     prot opt source               destination
+KUBE-MARK-MASQ  all  --  192.168.93.125       0.0.0.0/0
+DNAT       tcp  --  0.0.0.0/0            0.0.0.0/0            tcp to:192.168.93.125:443
+
+Chain KUBE-SERVICES (2 references)
+target     prot opt source               destination
+KUBE-SVC-ERIFXISQEP7F7OF4  tcp  --  0.0.0.0/0            10.100.0.10          /* kube-system/kube-dns:dns-tcp cluster IP */ tcp dpt:53
+KUBE-SVC-NPX46M4PTMTKRN6Y  tcp  --  0.0.0.0/0            10.100.0.1           /* default/kubernetes:https cluster IP */ tcp dpt:443
+KUBE-SVC-ZFAVNEBGNVMBQPKH  tcp  --  0.0.0.0/0            10.100.252.247       /* default/echoserver: cluster IP */ tcp dpt:80
+KUBE-SVC-TCOU7JCQXEZGVUNU  udp  --  0.0.0.0/0            10.100.0.10          /* kube-system/kube-dns:dns cluster IP */ udp dpt:53
+KUBE-NODEPORTS  all  --  0.0.0.0/0            0.0.0.0/0            /* kubernetes service nodeports; NOTE: this must be the last rule in this chain */ ADDRTYPE match dst-type LOCAL
+
+Chain KUBE-SVC-ERIFXISQEP7F7OF4 (1 references)
+target     prot opt source               destination
+KUBE-SEP-EPTVK44AHTECML3U  all  --  0.0.0.0/0            0.0.0.0/0            statistic mode random probability 0.50000000000
+KUBE-SEP-UIHHNEY5Z2543QQB  all  --  0.0.0.0/0            0.0.0.0/0
+
+Chain KUBE-SVC-NPX46M4PTMTKRN6Y (1 references)
+target     prot opt source               destination
+KUBE-SEP-5UMBSASBBN2WKKG6  all  --  0.0.0.0/0            0.0.0.0/0            statistic mode random probability 0.50000000000
+KUBE-SEP-VV35REXB7Z5L5654  all  --  0.0.0.0/0            0.0.0.0/0
+
+Chain KUBE-SVC-TCOU7JCQXEZGVUNU (1 references)
+target     prot opt source               destination
+KUBE-SEP-LXFJBNT2O4YXRJNO  all  --  0.0.0.0/0            0.0.0.0/0            statistic mode random probability 0.50000000000
+KUBE-SEP-LWCTYNFUJ5OTWQC6  all  --  0.0.0.0/0            0.0.0.0/0
+
+Chain KUBE-SVC-ZFAVNEBGNVMBQPKH (1 references)
+target     prot opt source               destination
+KUBE-SEP-CGOC76OYFGADJSOI  all  --  0.0.0.0/0            0.0.0.0/0
