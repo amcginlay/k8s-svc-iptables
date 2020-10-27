@@ -1,6 +1,7 @@
 # k8s-svc-iptables
 
-- This repo contains text file results of calling `sudo iptables -n -t nat -L` whilst logged into any k8s node as they should all behave identically.
+- This repo contains text file results of calling `sudo iptables -n -t nat -L` whilst logged into any k8s node.
+- `kube-proxy` is designed to ensure the ip table entries of all nodes are in sync at all time.
 
 ## The progression of this exercise is as follows:
 - `a-before-deployment.txt` represents the starting position of iptables on any k8s node.
