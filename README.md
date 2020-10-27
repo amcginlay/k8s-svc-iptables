@@ -11,4 +11,3 @@
 - result: `c-expose-clusterip.txt` - To demonstrate that creating a service causes a new target for the **Cluster IP** to be inserted into the KUBE_SERVICES Chain. The target is itself the identifier of a new SVC Chain. The new SVC Chain also has a target which is the identifier of a new SEP (Pod) Chain. This SEP Chain has a target for the **Pod IP** which is assigned from the VPC.
 #### >> `kubectl scale --replicas=2 deployment/echoserver`.
 - result: `d-scale-up.txt` - To demonstrate that increasing the number of pods causes additional SEP Chains to be created. The SVC Chain created in the previous step is now extended to include the new SEP Chain as a second target. 50% of the traffic will be targetted to each SEP Chain.
-also has a target which is the identifier of a new SEP (Pod) Chain. 
