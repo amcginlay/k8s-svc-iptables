@@ -1,7 +1,7 @@
 # k8s-svc-iptables
 
 - `kube-proxy` is designed to ensure the ip table entries of all nodes are in sync at all time.
-- Containers on each node are compelled to use the node's ip tables to translate between the pod network IPs and the node network IPs.
+- Containers on each node are compelled to use the node's ip tables to translate between the pod (node?) network and the service (cluster?) network.
 - Used this way, the ip tables of the nodes provide proxy-style load balancing across the cluster.
 
 This repo contains text file results of calling `sudo iptables -n -t nat -L` whilst logged into any k8s node.
