@@ -2,6 +2,8 @@
 
 - This repo contains text file results of calling `sudo iptables -n -t nat -L` whilst logged into any k8s node.
 - `kube-proxy` is designed to ensure the ip table entries of all nodes are in sync at all time.
+- Containers on each node are compelled to use the node's ip tables to translate between the pod network IPs and the node network IPs.
+- Used this way, the ip tables of the nodes provide proxy-style load balancing across the cluster.
 
 ## The progression of this exercise is as follows:
 - `a-before-deployment.txt` represents the starting position of iptables on any k8s node.
